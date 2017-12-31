@@ -35,5 +35,5 @@ while True:
     weather(temp)
     sleep(1000)
     if len(temps) == 600:
-        temps=[]
+        temps[:]=[]
     

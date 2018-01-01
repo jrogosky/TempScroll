@@ -1,22 +1,17 @@
 from microbit import *
 
 #Scrolls the current temperature on the dipslay
-def ScrollCurrentTemp():
-    curr = temperature() - 3
-    curr = round((curr * 9) / 5 + 32)
-    display.scroll(str(curr) + "F")
+def ScrollCurrentTemp(curr):
+    display.scroll("CURRENT TEMP: " + str(curr) + "F")
 
 #Scrolls the average temperature on the display.  Uses getAvg
-def ScrollAvgTemp():
-    avg = getAvg()   
-    display.scroll(str(avg) + "F")
+def ScrollAvgTemp(avg):   
+    display.scroll("AVG TEMP: " + str(avg) + "F")
     
 #Displays a symbol corresponding to the temperature    
 def weather(temp):
-    temp = round((temp * 9) / 5 + 32)
     if temp < 30:
-        #needs replaced. this is a "tree"
-        display.show(Image.XMAS)
+        display.show(snow)
     if temp >= 30 and temp < 50:
         display.show(Image.MEH)
     if temp >= 50 and temp < 80:
@@ -29,26 +24,45 @@ def getAvg():
     total = 0
     for i in temps:
         total += i
-    avg = round((((total / len(temps)) * 9) / 5) + 32)
+    avg = round(total / len(temps))
     return avg
+    
+#scrolls the trend up, down or neutral
+def ScrollTrend(temp, avg):
+    if avg - temp < 0:
+        display.show(Image.ARROW_N)
+    elif avg - temp == 0:
+        display.show(Image.ARROW_E)
+    else:
+        display.show(Image.ARROW_S)
      
-#initialize the main list     
+#initialize the main list and the snow image
+snow = Image("90909:"
+             "09990:"
+             "99099:"
+             "09990:"
+             "90909")
 temps = []
+#init previous average
+preAvg = (round(((temperature() - 3) * 9) / 5 + 32))
 #loop FOREVER
 while True:
     #gets the temperature from the board, -3 to adjust for the board heating up
-    temp = (temperature() - 3)
+    temp = (round(((temperature() - 3) * 9) / 5 + 32))
     #adds the temp to the list
     temps.append(temp)
-    if button_a.was_pressed():
-        ScrollCurrentTemp()
-    if button_b.was_pressed():
-        ScrollAvgTemp()
+    sleep(500)
+    ScrollCurrentTemp(temp)
+    sleep(800)
+    #shows the weather images
     weather(temp)
+    sleep(500)
+    #shows the average
+    ScrollAvgTemp(getAvg())
+    weather(temp)
+    #shows the trend
+    ScrollTrend(temp, getAvg())
     sleep(1000)
-    #prints the average temperature every minute
-    if len(temps) == 60:
-        print(str(getAvg()))
     #clears the average after 5 minutes
     if len(temps) == 300:
         temps[:]=[]

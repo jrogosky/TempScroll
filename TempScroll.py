@@ -49,8 +49,8 @@ while True:
     #prints the average temperature every minute
     if len(temps) == 60:
         print(str(getAvg()))
-    #clears the average after 10 minutes
-    if len(temps) == 600:
+    #clears the average after 5 minutes
+    if len(temps) == 300:
         temps[:]=[]
         
     
